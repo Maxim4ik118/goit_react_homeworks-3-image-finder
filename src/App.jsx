@@ -13,15 +13,6 @@ class App extends React.Component {
     modal: { isOpen: false, src: '', alt: '' },
   };
 
-  componentDidMount() {
-    this.requestImages(this.state.searchTerm, this.state.currentPage);
-    window.addEventListener('keydown', this.handleKeyPress);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.handleKeyPress);
-  }
-
   componentDidUpdate(prevProps, prevState) {
     if (
       prevState.currentPage !== this.state.currentPage ||
@@ -52,8 +43,7 @@ class App extends React.Component {
   };
 
   handleSubmitSearchTerm = searchTerm => {
-    this.setState(() => ({ currentPage: 1 }));
-    this.setState(() => ({ searchTerm }));
+    this.setState(() => ({ searchTerm, currentPage: 1 }));
   };
 
   handleLoadMore = () => {
@@ -61,17 +51,11 @@ class App extends React.Component {
   };
 
   handleOpenModal = (src, alt) => {
-    this.setState(s => ({ modal: { isOpen: true, src, alt } }));
+    this.setState(() => ({ modal: { isOpen: true, src, alt } }));
   };
 
   handleCloseModal = () => {
-    this.setState(s => ({ modal: { isOpen: false, src: '', alt: '' } }));
-  };
-
-  handleKeyPress = e => {
-    if (e.key === 'Escape') {
-      this.handleCloseModal();
-    }
+    this.setState(() => ({ modal: { isOpen: false, src: '', alt: '' } }));
   };
 
   render() {
@@ -82,6 +66,7 @@ class App extends React.Component {
       modal: { isOpen, src, alt },
     } = this.state;
 
+    const showLoadMoreBtn = images.length > 0 && !isFetching;
     return (
       <div className="app">
         <Searchbar onSubmit={this.handleSubmitSearchTerm} />
@@ -91,8 +76,12 @@ class App extends React.Component {
           images={images}
           openFullScreenMode={this.handleOpenModal}
         />
-        <Button onClick={this.handleLoadMore} />
-        {isOpen && <Modal closeModal={this.handleCloseModal} src={src} alt={alt} />}
+        {showLoadMoreBtn && <Button onClick={this.handleLoadMore} />}
+        {isOpen && (
+          <Modal closeModal={this.handleCloseModal}>
+            <img src={src} alt={alt} />
+          </Modal>
+        )}
       </div>
     );
   }

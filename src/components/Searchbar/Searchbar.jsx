@@ -12,14 +12,12 @@ class Searchbar extends React.Component {
   handleSubmit = e => {
     e.preventDefault();
 
-    const searchTerm = e.target.search.value;
-
-    this.props.onSubmit(searchTerm);
+    this.props.onSubmit(this.state.searchValue);
     this.setState(() => ({ searchValue: '' }));
   };
 
-  handleSearchTermChange = ({ target: { value } }) => {
-    this.setState(() => ({ searchValue: value }));
+  handleSearchTermChange = ({ target: { value, name } }) => {
+    this.setState(() => ({ [name]: value }));
   };
 
   static propTypes = {
@@ -27,7 +25,7 @@ class Searchbar extends React.Component {
   };
 
   render() {
-    const { searchTerm, handleSearchTermChange } = this.state;
+    const { searchValue } = this.state;
 
     return (
       <StyledFilter>
@@ -37,13 +35,13 @@ class Searchbar extends React.Component {
           </button>
 
           <input
-            onChange={handleSearchTermChange}
+            onChange={this.handleSearchTermChange}
             className="SearchForm-input"
             type="text"
             autoComplete="off"
             autoFocus
-            name="search"
-            value={searchTerm}
+            name="searchValue"
+            value={searchValue}
             placeholder="Search images and photos"
           />
         </form>
